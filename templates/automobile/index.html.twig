@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Automobile index{% endblock %}
+
+{% block body %}
+{{ form_start(formSearch) }}
+<div class="form-row align-items-end" >
+<div class="col">
+ {{ form_row(formSearch.n_immatriculation) }}
+</div>
+ <div class="col">
+ <div class="form-group">
+ <button type="submit" class="btn btn-success">Rechercher</button>
+ </div>
+</div>
+</div>
+{{ form_end(formSearch) }}
+
+<div background-color: "black">
+    <h1>Automobile index</h1>
+            <section id="gallery">
+            <div class="container">
+                <div class="row">
+                {% for automobile in automobiles %}
+                    <div class="col-lg-4 mb-4">
+                        <div class="w3-panel w3-card">
+                            <img src="{{asset('uploads/')}}{{automobile.image}}" alt="" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ automobile.nImmatriculation }}</h5>
+                                <p class="card-text">{{ automobile.Description }}</p>
+                                <a href="{{ path('automobile_show', {'id': automobile.id}) }}" class="btn btn-outline-success btn-sm">Show more</a>
+                                <a href="{{ path('automobile_edit', {'id': automobile.id}) }}" class="btn btn-outline-danger btn-sm">Edit</a>
+                            </div>
+                      </div>
+                    </div>
+                    {% else %}
+                <h1>no records found<h1>
+
+        {% endfor %}
+        
+                </div>
+
+            </div>
+            </section>
+            <div class="text-center">
+            <a href="{{ path('automobile_new') }}" type="button" class="btn btn-primary" >Create new</a>
+            </div>
+    </div>        
+{% endblock %}

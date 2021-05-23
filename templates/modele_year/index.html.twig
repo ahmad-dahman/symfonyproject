@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ModeleYear index{% endblock %}
+
+{% block body %}
+    <h1>ModeleYear index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Modele_id</th>
+                <th>Year_id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for modele_year in modele_years %}
+            <tr>
+                <td>{{ modele_year.id }}</td>
+                <td>{{ modele_year.modeleId }}</td>
+                <td>{{ modele_year.yearId }}</td>
+                <td>
+                    <a href="{{ path('modele_year_show', {'id': modele_year.id}) }}">show</a>
+                    <a href="{{ path('modele_year_edit', {'id': modele_year.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('modele_year_new') }}">Create new</a>
+{% endblock %}

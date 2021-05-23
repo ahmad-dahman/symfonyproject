@@ -1,0 +1,15 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+index:
+    path: /
+    controller: App\Controller\DefaultController::index
+automobile_list_modeles:
+    path:     /get-modele-from-marque
+    controller: App\Controller\AutomobileController::listModelesOfMarqueAction
+    methods:  GET
+
+automobile_list_years:
+    path:     /get-year-from-modele
+    controller: App\Controller\AutomobileController::listYearsOfModeleAction
+    methods:  GET

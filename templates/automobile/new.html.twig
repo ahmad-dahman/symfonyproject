@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Automobile{% endblock %}
+
+{% block body %}
+    <h1>Create new Automobile</h1>
+
+    {{ include('automobile/_form.html.twig') }}
+
+    <a href="{{ path('automobile_index') }}">back to list</a>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $('#app_automobile_marque').change(function () {
+            var marqueSelector = $(this);
+            
+            // Request the modeles of the selected marque.
+            $.ajax({
+                url: "{{ path('automobile_list_modeles') }}",
+                type: "GET",
+                dataType: "JSON",
+                data: {
+                    marqueid: marqueSelector.val()
+                },
+                success: function (modele) {
+                    var modeleSelect = $("#app_automobile_modele");
+
+                    // Remove current options
+                    modeleSelect.html('');
+                    
+                    // Empty value ...
+                    if ((marqueSelector.find("option:selected").text()).localeCompare("Select the marque")!=0){
+                        modeleSelect.append('<option value>Select a modele of ' + marqueSelector.find("option:selected").text() + ' ...</option>');
+                    }else{
+                        modeleSelect.append('<option value>Select a marque first ...</option>');
+                    }
+                    
+                    
+                    
+                    $.each(modele, function (key, modele) {
+                        modeleSelect.append('<option value="' + modele.id + '">' + modele.modele + '</option>');
+                    });
+                },
+                error: function (err) {
+                    alert("An error ocurred while loading data ...");
+                }
+            });
+        });
+        $('#app_automobile_modele').change(function () {
+            var modeleSelector = $(this);
+            // Request the year of the selected modele.
+            $.ajax({
+                url: "{{ path('automobile_list_years') }}",
+                type: "GET",
+                dataType: "JSON",
+                data: {
+                    modeleid: modeleSelector.val()
+                },
+                
+                success: function (year) {
+                    var yearSelect = $("#app_automobile_year");
+
+                    // Remove current options
+                    yearSelect.html('');
+                    
+                    // Empty value ...
+                    if ((modeleSelector.find("option:selected").text()).includes("Select a modele of ")){
+                       yearSelect.append('<option value> Select a modele first ...</option>');
+                    }else{
+                        yearSelect.append('<option value> Select a year of ' + modeleSelector.find("option:selected").text() + ' ...</option>');
+                    }
+                    
+                    
+                    
+                    $.each(year, function (key, year) {
+                        yearSelect.append('<option value="' + year.id + '">' + year.year + '</option>');
+                    });
+                },
+                error: function (err) {
+                    alert("An error ocurred while loading data ...");
+                }
+            });
+        });
+        
+    </script>
+{% endblock %}
+

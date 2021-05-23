@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Automobile{% endblock %}
+
+{% block body %}
+    <h1>Automobile</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ automobile.id }}</td>
+            </tr>
+            <tr>
+                <th>N_immatriculation</th>
+                <td>{{ automobile.nImmatriculation }}</td>
+            </tr>
+            <tr>
+                <th>Proprietaire</th>
+                <td>{{ automobile.proprietaire }}</td>
+            </tr>
+            <tr>
+                <th>Cin_MF</th>
+                <td>{{ automobile.cinMF }}</td>
+            </tr>
+            <tr>
+                <th>Marque</th>
+                <td>{{ automobile.marque }}</td>
+            </tr>
+            <tr>
+                <th>Modele</th>
+                <td>{{ automobile.modele }}</td>
+            </tr>
+            <tr>
+                <th>Production Year</th>
+                <td>{{ automobile.year }}</td>
+            </tr>
+            <tr>
+                <th>Categorie</th>
+                <td>{{ automobile.categorie }}</td>
+            </tr>
+            <tr>
+                <th>N_chassis</th>
+                <td>{{ automobile.nChassis }}</td>
+            </tr>
+            <tr>
+                <th>Puiss_fiscale</th>
+                <td>{{ automobile.puissFiscale }}</td>
+            </tr>
+            <tr>
+                <th>Dpmc</th>
+                <td>{{ automobile.dpmc ? automobile.dpmc|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Kilometrage</th>
+                <td>{{ automobile.Kilometrage }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>
+                <textarea id="w3review" name="w3review" rows="4" cols="50">{{ automobile.description }}</textarea>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('automobile_index') }}">back to list</a>
+
+    <a href="{{ path('automobile_edit', {'id': automobile.id}) }}">edit</a>
+
+    {{ include('automobile/_delete_form.html.twig') }}
+{% endblock %}

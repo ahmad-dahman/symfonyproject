@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}History index{% endblock %}
+
+{% block body %}
+    <h1>History index</h1>
+
+    {{ form_start(formSearch) }}
+<div class="form-row align-items-end" >
+<div class="col">
+ {{ form_row(formSearch.n_immatriculation) }}
+</div>
+ <div class="col">
+ <div class="form-group">
+ <button type="submit" class="btn btn-success">Rechercher</button>
+ </div>
+</div>
+</div>
+{{ form_end(formSearch) }}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>matricule</th>
+                <th>etat</th>
+                <th>kilometrage</th>
+                <th>date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for History in historys %}
+            <tr>
+                <td>{{ History.id }}</td>
+                <td>{{ History.NImmatriculation }}</td>
+                <td>{{ History.Etat }}</td>
+                <td>{{ History.Kilometrage }}</td>
+                <td>{{ History.Date }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

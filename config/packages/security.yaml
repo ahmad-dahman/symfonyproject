@@ -1,0 +1,41 @@
+security:
+    encoders:
+        App\Entity\User: bcrypt
+        
+    providers:
+        database_users:
+            entity: { class: App\Entity\User }
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|build|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            anonymous: true
+
+            form_login:
+                check_path: security_login
+                login_path: security_login
+                remember_me: true
+                csrf_token_generator: security.csrf.token_manager
+                default_target_path: index
+                # use_referer: true # Redirection to 'target_path' is being managed inside the success handler Listener below
+                success_handler: app.authentication_success_handler
+                
+            logout:
+                path: security_logout
+                target: index
+
+            remember_me:
+                secret:   '%kernel.secret%'
+                lifetime: 604800 # 1 week in seconds
+                path:     /
+                always_remember_me: true
+                remember_me_parameter: _remember_me
+                domain: ~
+
+    access_control:
+        - { path: '^/login', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: '^/profile', roles: [IS_AUTHENTICATED_FULLY, IS_AUTHENTICATED_REMEMBERED] }

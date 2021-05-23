@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Marque{% endblock %}
+
+{% block body %}
+    <h1>Marque</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ marque.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom Marque</th>
+                <td>{{ marque.nomMarque }}</td>
+            </tr>
+            <tr>
+                <th>Marque Logo</th>
+                <td><img src="{{asset('uploads/')}}{{marque.image}}" style="width:100px;height:100px" alt=""></td>
+            </tr>
+            <tr>
+                <th>Modele</th>
+                <td>
+                <ul>
+                {% for modele in marque.modeles %}
+                <li>{{ modele.getNomModele() }}</li>
+                {% endfor %}
+                </ul></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('marque_index') }}">back to list</a>
+
+    <a href="{{ path('marque_edit', {'id': marque.id}) }}">edit</a>
+
+    {{ include('marque/_delete_form.html.twig') }}
+{% endblock %}

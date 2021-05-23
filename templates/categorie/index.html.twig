@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block title %}Categorie index{% endblock %}
+
+{% block body %}
+    <h1>Categorie index</h1>
+            <section id="gallery">
+            <div class="container">
+            
+                <div class="row">
+                {% for categorie in categories %}
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <img src="{{asset('uploads/')}}{{categorie.image}}" alt="" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">{{  categorie.nomCategorie }}</h5>
+                                <p class="card-text"><ul>
+                {% for modele in categorie.modeles %}
+                <li>{{ modele.getNomModele() }}</li>
+                {% endfor %}
+                </ul></p>
+                                <a href="{{ path('categorie_show', {'id': categorie.id}) }}"class="btn btn-outline-success btn-sm">show</a>
+                    <a href="{{ path('categorie_edit', {'id': categorie.id}) }}"class="btn btn-outline-danger btn-sm">edit</a>
+                </div>
+                      </div>
+                    </div>
+                    {% else %}
+                <h1>no records found<h1>
+
+        {% endfor %}
+                </div>
+
+            </div>
+            </section>
+            <div class="text-center">
+            <a href="{{ path('categorie_new') }}" type="button" class="btn btn-primary" >Create new</a>
+            </div>
+
+{% endblock %}
+
+

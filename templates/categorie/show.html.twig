@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categorie{% endblock %}
+
+{% block body %}
+    <h1>Categorie</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ categorie.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom Categorie</th>
+                <td>{{ categorie.nomCategorie }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td><img src="{{asset('uploads/')}}{{categorie.image}}" style="width:100px;height:100px" alt=""></td>
+            </tr>
+            <tr>
+                <th>Modeles</th>
+                <td>
+                <ul>
+                {% for modele in categorie.modeles %}
+                <li>{{ modele.getNomModele() }}</li>
+                {% endfor %}
+                </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('categorie_index') }}">back to list</a>
+
+    <a href="{{ path('categorie_edit', {'id': categorie.id}) }}">edit</a>
+
+    {{ include('categorie/_delete_form.html.twig') }}
+{% endblock %}
+{% block javascripts %}
+<script>
+console.log(#categorie-id);
+if ((categorie.modeles).lenght === 0) { 
+    console.log("Array is empty!") ;
+}else{
+    console.log("Array is not empty!");
+}
+</script>
+{% endblock %}

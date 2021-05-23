@@ -1,0 +1,43 @@
+{% extends 'template.html.twig' %}
+
+{% block title %}Energie index{% endblock %}
+
+{% block body %}
+    <h1>Energie index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Energie</th>
+                <th>Automobile</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for energie in energies %}
+            <tr>
+                <td>{{ energie.id }}</td>
+                <td>{{ energie.nomEnergie }}</td>
+                <td>
+                <ul>
+                {% for Automobile in energie.automobiles %}
+                <li>{{ Automobile.getNImmatriculation() }}</li>
+                {% endfor %}
+                </ul>
+                </td>
+                <td>
+                    <a href="{{ path('energie_show', {'id': energie.id}) }}">show</a>
+                    <a href="{{ path('energie_edit', {'id': energie.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('energie_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ModeleYear{% endblock %}
+
+{% block body %}
+    <h1>ModeleYear</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ modele_year.id }}</td>
+            </tr>
+            <tr>
+                <th>Modele_id</th>
+                <td>{{ modele_year.modeleId }}</td>
+            </tr>
+            <tr>
+                <th>Year_id</th>
+                <td>{{ modele_year.yearId }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('modele_year_index') }}">back to list</a>
+
+    <a href="{{ path('modele_year_edit', {'id': modele_year.id}) }}">edit</a>
+
+    {{ include('modele_year/_delete_form.html.twig') }}
+{% endblock %}
