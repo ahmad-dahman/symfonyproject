@@ -7,6 +7,8 @@ use App\Entity\ModeleYear;
 
 use App\Form\AutomobileType;
 
+use App\Entity\SearchByMarque;
+use App\Form\SearchByMarqueType;
 use App\Entity\AutomobileHistory;
 use App\Entity\SearchBymatricule;
 use Doctrine\ORM\Query\Expr\Join;
@@ -17,10 +19,15 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\SearchBymatriculeRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/automobile")
+ * 
+ * Require ROLE_USER for *every* controller method in this class.
+ * 
+ * 
  */
 class AutomobileController extends AbstractController
 {
@@ -29,31 +36,55 @@ class AutomobileController extends AbstractController
      */
     public function index(AutomobileRepository $automobileRepository,  Request $request): Response
     {
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $automobiles=[];
+            // rechercher automibile par matricule
         $SearchByMatricule = new SearchBymatricule();
-        $form = $this->createForm(SearchBymatriculeType::class, $SearchByMatricule);
-        $form->handleRequest($request);
-        $automobiles=[];
-        if ($form->isSubmitted() && $form->isValid()) {
-            $n_immatriculation = $SearchByMatricule->getNImmatriculation();
-            if ($n_immatriculation!="") {
-                //si on a fourni un matricule d'automobile on affiche tous les automobiles ayant ce matricule
-                $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findBy(['n_immatriculation'=>$n_immatriculation]);
-            } else {
-                //si si aucun nom n'est fourni on affiche tous les automobiles
-                $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findAll();
+        $formMatricule = $this->createForm(SearchBymatriculeType::class, $SearchByMatricule);
+        $formMatricule->handleRequest($request);
+
+        // rechercher automibile par marque
+        $SearchByMarque = new SearchByMarque();
+        $formMarque = $this->createForm(SearchByMarqueType::class, $SearchByMarque);
+        $formMarque->handleRequest($request);
+
+        
+        if (($formMatricule->isSubmitted() && $formMatricule->isValid())||($formMarque->isSubmitted() && $formMarque->isValid())) {
+            if ($formMatricule->isSubmitted() && $formMatricule->isValid()){
+                $n_immatriculation = $SearchByMatricule->getNImmatriculation();
+                if ($n_immatriculation!="") {
+                    //si on a fourni un matricule d'automobile on affiche tous les automobiles ayant ce matricule
+                    $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findBy(['n_immatriculation'=>$n_immatriculation]);
+                } else {
+                    //si si aucun nom n'est fourni on affiche tous les automobiles
+                    $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findAll();
+                }
             }
-            return $this->render('automobile/index.html.twig', [ 'formSearch' =>$form->createView(),
+            if ($formMarque->isSubmitted() && $formMarque->isValid()) {
+                $marque = $formMarque->get('Marque')->getData()->getId();
+                if ($marque!="") {
+                    //si on a fourni un matricule d'automobile on affiche tous les automobiles ayant ce matricule
+                    $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findBy(['marque'=>$marque]);
+                } else {
+                    //si si aucun nom n'est fourni on affiche tous les automobiles
+                    $automobiles = $this->getDoctrine()->getRepository(Automobile::class)->findAll();
+                }
+            }            
+            return $this->render('automobile/index.html.twig', [ 'formMatricule' =>$formMatricule->createView(),'formMarque' =>$formMarque->createView(),
              'automobiles'=>$automobiles]);
             
         }else{
             $automobiles=$automobileRepository->findAll();
-            return $this->render('automobile/index.html.twig', ['formSearch' =>$form->createView(),
+            return $this->render('automobile/index.html.twig', ['formMatricule' =>$formMatricule->createView(),'formMarque' =>$formMarque->createView(),
             'automobiles' => $automobiles
         ]);
 
         }
-        
-         
+    }else{
+        return $this->redirectToRoute('homepage');
+    }     
     }
 
     /**
@@ -61,7 +92,10 @@ class AutomobileController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $automobile = new Automobile();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $automobile = new Automobile();
         $AutomobileHistory = new AutomobileHistory();
         $form = $this->createForm(AutomobileType::class, $automobile);
         $form->handleRequest($request);
@@ -73,18 +107,16 @@ class AutomobileController extends AbstractController
             $imageFile->move( $this->getParameter('image_directory'), $fileName);
             $automobile->setImage($fileName);
             $automobile = $form->getData();
-            
-
+            //
             //remplir table automobilehistory moment de creer l'automobile
             $matricule = $form->get('n_immatriculation')->getData();
             $etat = $form->get('etat')->getData();
             $kilometrage = $form->get('Kilometrage')->getData();
-
             $AutomobileHistory->setNImmatriculation($matricule);
             $AutomobileHistory->setKilometrage($kilometrage);
             $AutomobileHistory->setEtat($etat);
             $AutomobileHistory->setDate(\date("Y-m-d h:i:sa"));
-
+            //
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($automobile);
             $entityManager->persist($AutomobileHistory);
@@ -97,6 +129,10 @@ class AutomobileController extends AbstractController
             'automobile' => $automobile,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -104,9 +140,16 @@ class AutomobileController extends AbstractController
      */
     public function show(Automobile $automobile): Response
     {
-        return $this->render('automobile/show.html.twig', [
-            'automobile' => $automobile,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            return $this->render('automobile/show.html.twig', [
+                'automobile' => $automobile,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -114,7 +157,10 @@ class AutomobileController extends AbstractController
      */
     public function edit(Request $request, Automobile $automobile): Response
     {
-        $AutomobileHistory = new AutomobileHistory();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $AutomobileHistory = new AutomobileHistory();
         $form = $this->createForm(AutomobileType::class, $automobile);
         $form->handleRequest($request);
 
@@ -135,7 +181,7 @@ class AutomobileController extends AbstractController
             $AutomobileHistory->setKilometrage($kilometrage);
             $AutomobileHistory->setEtat($etat);
             $AutomobileHistory->setDate(\date("Y-m-d h:i:sa"));
-            
+            //
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($AutomobileHistory);
             $entityManager->flush();
@@ -147,6 +193,10 @@ class AutomobileController extends AbstractController
             'automobile' => $automobile,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -154,13 +204,20 @@ class AutomobileController extends AbstractController
      */
     public function delete(Request $request, Automobile $automobile): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$automobile->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($automobile);
-            $entityManager->flush();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            if ($this->isCsrfTokenValid('delete'.$automobile->getId(), $request->request->get('_token'))) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($automobile);
+                $entityManager->flush();
+            }
+    
+            return $this->redirectToRoute('automobile_index');
+        }else{
+            return $this->redirectToRoute('homepage');
         }
-
-        return $this->redirectToRoute('automobile_index');
+        
     }
 
     /**

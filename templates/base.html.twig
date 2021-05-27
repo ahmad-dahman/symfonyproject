@@ -3,29 +3,34 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome to Automobile !{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        {% block stylesheets %}
         <link href="{{asset('frontend/style.css')}}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        {% block stylesheets %}{% endblock %}
+        {% endblock %}
         {% block head %}
 <div id="menu">
   <ul>
-    <li class="active"><a href="#">Home</a></li>
-    {% if app.user %}
+    <li class="active"><a href="{{ path('homepage') }}">Home</a></li>
+    {% if is_granted('ROLE_USER') %}
     <li><a href="{{ path('automobile_index') }}">Automobile</a></li>
+    <li><a href="{{ path('history') }}">Automobile History</a></li>
+    <li><a href="{{ path('etat_index') }}">Etat</a></li>
+    <li><a href="{{ path('energie_index') }}">Energie</a></li>
+    {% endif %}
+    {% if is_granted('ROLE_ADMIN') %}
     <li><a href="{{ path('marque_index') }}">Marque</a></li>
     <li><a href="{{ path('modele_index') }}">Modele</a></li>
     <li><a href="{{ path('categorie_index') }}">Categorie</a></li>
-     <li><a href="{{ path('year_index') }}">Production Year</a></li>
-      <li><a href="{{ path('history') }}">History</a></li>
+     <li><a href="{{ path('user_index') }}">User</a></li>
     {% endif %}
     {% if not app.user %}
         <li class="nav-item">
-        <a href="{{ path('security_login')}}" class="nav-link">Connexion</a>
+        <a href="{{ path('security_login')}}" class="nav-link">Login</a>
         </li>
         {% else %}
         <li class="nav-item">
-        <a href="{{ path('security_logout')}}" class="navlink">Déconnexion</a>
+        <a href="{{ path('security_logout')}}" class="navlink">Logout</a>
         </li>
         {% endif %}
 

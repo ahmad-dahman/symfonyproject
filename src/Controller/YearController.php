@@ -20,9 +20,15 @@ class YearController extends AbstractController
      */
     public function index(YearRepository $yearRepository): Response
     {
-        return $this->render('year/index.html.twig', [
-            'years' => $yearRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        if($user){
+            return $this->render('year/index.html.twig', [
+                'years' => $yearRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +36,9 @@ class YearController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $year = new Year();
+        $user = $this->getUser();
+        if($user){
+            $year = new Year();
         $form = $this->createForm(YearType::class, $year);
         $form->handleRequest($request);
 
@@ -46,6 +54,10 @@ class YearController extends AbstractController
             'year' => $year,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -53,9 +65,15 @@ class YearController extends AbstractController
      */
     public function show(Year $year): Response
     {
-        return $this->render('year/show.html.twig', [
-            'year' => $year,
-        ]);
+        $user = $this->getUser();
+        if($user){
+            return $this->render('year/show.html.twig', [
+                'year' => $year,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -63,7 +81,9 @@ class YearController extends AbstractController
      */
     public function edit(Request $request, Year $year): Response
     {
-        $form = $this->createForm(YearType::class, $year);
+        $user = $this->getUser();
+        if($user){
+            $form = $this->createForm(YearType::class, $year);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,6 +96,10 @@ class YearController extends AbstractController
             'year' => $year,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -83,7 +107,9 @@ class YearController extends AbstractController
      */
     public function delete(Request $request, Year $year): Response
     {
-        // if the year is connected to an automobile or modele it will not be deleted or cause an exception
+        $user = $this->getUser();
+        if($user){
+            // if the year is connected to an automobile or modele it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$year->getId(), $request->request->get('_token'))){
             return $this->render('year/show.html.twig', [
                 'year' => $year,
@@ -96,5 +122,9 @@ class YearController extends AbstractController
         }
 
         return $this->redirectToRoute('year_index');
+    
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
     }
 }

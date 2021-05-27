@@ -20,9 +20,16 @@ class CategorieController extends AbstractController
      */
     public function index(CategorieRepository $categorieRepository): Response
     {
-        return $this->render('categorie/index.html.twig', [
-            'categories' => $categorieRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('categorie/index.html.twig', [
+                'categories' => $categorieRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +37,10 @@ class CategorieController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $categorie = new Categorie();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $categorie = new Categorie();
         $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
@@ -53,6 +63,10 @@ class CategorieController extends AbstractController
             'categorie' => $categorie,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -60,9 +74,16 @@ class CategorieController extends AbstractController
      */
     public function show(Categorie $categorie): Response
     {
-        return $this->render('categorie/show.html.twig', [
-            'categorie' => $categorie,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('categorie/show.html.twig', [
+                'categorie' => $categorie,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -70,7 +91,10 @@ class CategorieController extends AbstractController
      */
     public function edit(Request $request, Categorie $categorie): Response
     {
-        $form = $this->createForm(CategorieType::class, $categorie);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -88,6 +112,10 @@ class CategorieController extends AbstractController
             'categorie' => $categorie,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -95,7 +123,10 @@ class CategorieController extends AbstractController
      */
     public function delete(Request $request, Categorie $categorie): Response
     {
-        // if the categorie is connected to a modele, it will not be deleted or cause an exception
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            // if the categorie is connected to a modele, it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$categorie->getId(), $request->request->get('_token'))){
             return $this->render('categorie/show.html.twig', [
                 'categorie' => $categorie,
@@ -108,5 +139,9 @@ class CategorieController extends AbstractController
         }
 
         return $this->redirectToRoute('categorie_index');
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }

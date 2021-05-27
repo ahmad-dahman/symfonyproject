@@ -19,10 +19,17 @@ class EtatController extends AbstractController
      * @Route("/", name="etat_index", methods={"GET"})
      */
     public function index(EtatRepository $etatRepository): Response
-    {
-        return $this->render('etat/index.html.twig', [
-            'etats' => $etatRepository->findAll(),
-        ]);
+    {        
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            return $this->render('etat/index.html.twig', [
+                'etats' => $etatRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +37,10 @@ class EtatController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $etat = new Etat();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $etat = new Etat();
         $form = $this->createForm(EtatType::class, $etat);
         $form->handleRequest($request);
 
@@ -46,6 +56,10 @@ class EtatController extends AbstractController
             'etat' => $etat,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -53,9 +67,16 @@ class EtatController extends AbstractController
      */
     public function show(Etat $etat): Response
     {
-        return $this->render('etat/show.html.twig', [
-            'etat' => $etat,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            return $this->render('etat/show.html.twig', [
+                'etat' => $etat,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -63,7 +84,9 @@ class EtatController extends AbstractController
      */
     public function edit(Request $request, Etat $etat): Response
     {
-        $form = $this->createForm(EtatType::class, $etat);
+        $user = $this->getUser();
+        if($user){
+            $form = $this->createForm(EtatType::class, $etat);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,6 +99,10 @@ class EtatController extends AbstractController
             'etat' => $etat,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -83,7 +110,9 @@ class EtatController extends AbstractController
      */
     public function delete(Request $request, Etat $etat): Response
     {
-        // if the etat is connected to an automobile it will not be deleted or cause an exception
+        $user = $this->getUser();
+        if($user){
+            // if the etat is connected to an automobile it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$etat->getId(), $request->request->get('_token'))){
             return $this->render('etat/show.html.twig', [
                 'etat' => $etat,
@@ -96,5 +125,9 @@ class EtatController extends AbstractController
         }
 
         return $this->redirectToRoute('etat_index');
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }

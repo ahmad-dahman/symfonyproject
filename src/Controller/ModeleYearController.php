@@ -20,9 +20,15 @@ class ModeleYearController extends AbstractController
      */
     public function index(ModeleYearRepository $modeleYearRepository): Response
     {
-        return $this->render('modele_year/index.html.twig', [
-            'modele_years' => $modeleYearRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        if($user){
+            return $this->render('modele_year/index.html.twig', [
+                'modele_years' => $modeleYearRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +36,9 @@ class ModeleYearController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $modeleYear = new ModeleYear();
+        $user = $this->getUser();
+        if($user){
+            $modeleYear = new ModeleYear();
         $form = $this->createForm(ModeleYearType::class, $modeleYear);
         $form->handleRequest($request);
 
@@ -46,6 +54,10 @@ class ModeleYearController extends AbstractController
             'modele_year' => $modeleYear,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -53,9 +65,15 @@ class ModeleYearController extends AbstractController
      */
     public function show(ModeleYear $modeleYear): Response
     {
-        return $this->render('modele_year/show.html.twig', [
-            'modele_year' => $modeleYear,
-        ]);
+        $user = $this->getUser();
+        if($user){
+            return $this->render('modele_year/show.html.twig', [
+                'modele_year' => $modeleYear,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -63,7 +81,9 @@ class ModeleYearController extends AbstractController
      */
     public function edit(Request $request, ModeleYear $modeleYear): Response
     {
-        $form = $this->createForm(ModeleYearType::class, $modeleYear);
+        $user = $this->getUser();
+        if($user){
+            $form = $this->createForm(ModeleYearType::class, $modeleYear);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,6 +96,10 @@ class ModeleYearController extends AbstractController
             'modele_year' => $modeleYear,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -83,12 +107,17 @@ class ModeleYearController extends AbstractController
      */
     public function delete(Request $request, ModeleYear $modeleYear): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$modeleYear->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($modeleYear);
-            $entityManager->flush();
+        $user = $this->getUser();
+        if($user){
+            if ($this->isCsrfTokenValid('delete'.$modeleYear->getId(), $request->request->get('_token'))) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($modeleYear);
+                $entityManager->flush();
+            }
+    
+            return $this->redirectToRoute('modele_year_index');    
+        }else{
+            return $this->redirectToRoute('homepage');
         }
-
-        return $this->redirectToRoute('modele_year_index');
     }
 }

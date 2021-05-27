@@ -20,9 +20,16 @@ class ModeleController extends AbstractController
      */
     public function index(ModeleRepository $modeleRepository): Response
     {
-        return $this->render('modele/index.html.twig', [
-            'modeles' => $modeleRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('modele/index.html.twig', [
+                'modeles' => $modeleRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +37,10 @@ class ModeleController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $modele = new Modele();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $modele = new Modele();
         $form = $this->createForm(ModeleType::class, $modele);
         $form->handleRequest($request);
 
@@ -46,6 +56,10 @@ class ModeleController extends AbstractController
             'modele' => $modele,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -53,9 +67,16 @@ class ModeleController extends AbstractController
      */
     public function show(Modele $modele): Response
     {
-        return $this->render('modele/show.html.twig', [
-            'modele' => $modele,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('modele/show.html.twig', [
+                'modele' => $modele,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -63,7 +84,10 @@ class ModeleController extends AbstractController
      */
     public function edit(Request $request, Modele $modele): Response
     {
-        $form = $this->createForm(ModeleType::class, $modele);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $form = $this->createForm(ModeleType::class, $modele);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,6 +100,10 @@ class ModeleController extends AbstractController
             'modele' => $modele,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -83,7 +111,10 @@ class ModeleController extends AbstractController
      */
     public function delete(Request $request, Modele $modele): Response
     {
-        // if the modele is connected to a year it will not be deleted or cause an exception
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            // if the modele is connected to a year it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$modele->getId(), $request->request->get('_token'))){
             return $this->render('modele/show.html.twig', [
                 'modele' => $modele,
@@ -96,5 +127,9 @@ class ModeleController extends AbstractController
         }
 
         return $this->redirectToRoute('modele_index');
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }

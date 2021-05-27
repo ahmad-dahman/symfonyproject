@@ -18,7 +18,11 @@ class HistoryController extends AbstractController
      */
     public function index(HistoryRepository $HistoryRepository, request $request): Response
     {
-        $SearchByMatricule = new SearchBymatricule();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            //rechercher automobile par matricule
+            $SearchByMatricule = new SearchBymatricule();
         $form = $this->createForm(SearchBymatriculeType::class, $SearchByMatricule);
         $form->handleRequest($request);
         $historys=[];
@@ -41,5 +45,9 @@ class HistoryController extends AbstractController
         ]);
 
         }
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }

@@ -20,9 +20,16 @@ class MarqueController extends AbstractController
      */
     public function index(MarqueRepository $marqueRepository): Response
     {
-        return $this->render('marque/index.html.twig', [
-            'marques' => $marqueRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('marque/index.html.twig', [
+                'marques' => $marqueRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +37,10 @@ class MarqueController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $marque = new Marque();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $marque = new Marque();
         $form = $this->createForm(MarqueType::class, $marque);
         $form->handleRequest($request);
 
@@ -54,6 +64,10 @@ class MarqueController extends AbstractController
             'marque' => $marque,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -61,9 +75,16 @@ class MarqueController extends AbstractController
      */
     public function show(Marque $marque): Response
     {
-        return $this->render('marque/show.html.twig', [
-            'marque' => $marque,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            return $this->render('marque/show.html.twig', [
+                'marque' => $marque,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -71,7 +92,10 @@ class MarqueController extends AbstractController
      */
     public function edit(Request $request, Marque $marque): Response
     {
-        $form = $this->createForm(MarqueType::class, $marque);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            $form = $this->createForm(MarqueType::class, $marque);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -90,6 +114,10 @@ class MarqueController extends AbstractController
             'marque' => $marque,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -97,7 +125,10 @@ class MarqueController extends AbstractController
      */
     public function delete(Request $request, Marque $marque): Response
     {
-        // if the marque is connected to an automobile or modele it will not be deleted or cause an exception
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_ADMIN'){
+            // if the marque is connected to an automobile or modele it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$marque->getId(), $request->request->get('_token'))){
             return $this->render('marque/show.html.twig', [
                 'marque' => $marque,
@@ -110,5 +141,9 @@ class MarqueController extends AbstractController
         }
 
         return $this->redirectToRoute('marque_index');
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }

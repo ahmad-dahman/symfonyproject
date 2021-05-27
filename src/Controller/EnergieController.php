@@ -20,9 +20,16 @@ class EnergieController extends AbstractController
      */
     public function index(EnergieRepository $energieRepository): Response
     {
-        return $this->render('energie/index.html.twig', [
-            'energies' => $energieRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            return $this->render('energie/index.html.twig', [
+                'energies' => $energieRepository->findAll(),
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -30,7 +37,10 @@ class EnergieController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $energie = new Energie();
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $energie = new Energie();
         $form = $this->createForm(EnergieType::class, $energie);
         $form->handleRequest($request);
 
@@ -46,6 +56,10 @@ class EnergieController extends AbstractController
             'energie' => $energie,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -53,9 +67,16 @@ class EnergieController extends AbstractController
      */
     public function show(Energie $energie): Response
     {
-        return $this->render('energie/show.html.twig', [
-            'energie' => $energie,
-        ]);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            return $this->render('energie/show.html.twig', [
+                'energie' => $energie,
+            ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -63,7 +84,10 @@ class EnergieController extends AbstractController
      */
     public function edit(Request $request, Energie $energie): Response
     {
-        $form = $this->createForm(EnergieType::class, $energie);
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            $form = $this->createForm(EnergieType::class, $energie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,6 +100,10 @@ class EnergieController extends AbstractController
             'energie' => $energie,
             'form' => $form->createView(),
         ]);
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -83,7 +111,10 @@ class EnergieController extends AbstractController
      */
     public function delete(Request $request, Energie $energie): Response
     {
-        // if the energie is connected to an automobile it will not be deleted or cause an exception
+        $user = $this->getUser();
+        $role = $user->getRoles();
+        if($role[0]==='ROLE_USER'){
+            // if the energie is connected to an automobile it will not be deleted or cause an exception
         if ($this->isCsrfTokenValid('show'.$energie->getId(), $request->request->get('_token'))){
             return $this->render('energie/show.html.twig', [
                 'energie' => $energie,
@@ -96,5 +127,9 @@ class EnergieController extends AbstractController
         }
 
         return $this->redirectToRoute('energie_index');
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 }
